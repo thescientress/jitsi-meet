@@ -118,6 +118,7 @@ class Conference extends AbstractConference<Props, *> {
     constructor(props) {
         super(props);
 
+        // todo: redux
         this.state = {
             showDeeplink: true
         };
@@ -230,6 +231,7 @@ class Conference extends AbstractConference<Props, *> {
             _showPrejoin
         } = this.props;
         const hideLabels = filmstripOnly || _iAmRecorder;
+        const { showDeeplink } = this.state;
 
         return (
             <div
@@ -239,7 +241,7 @@ class Conference extends AbstractConference<Props, *> {
 
                 <Notice />
                 <Subject />
-                <InviteMore showDeeplink = { this.state.showDeeplink } />
+                <InviteMore showDeeplink = { showDeeplink } />
                 <div id = 'videospace'>
                     <LargeVideo />
                     { hideLabels
@@ -247,7 +249,7 @@ class Conference extends AbstractConference<Props, *> {
                     <Filmstrip filmstripOnly = { filmstripOnly } />
                 </div>
 
-                { filmstripOnly || _showPrejoin || <Toolbox /> }
+                { filmstripOnly || _showPrejoin || <Toolbox authed = { !showDeeplink } /> }
                 { filmstripOnly || <Chat /> }
 
                 { this.renderNotificationsContainer() }

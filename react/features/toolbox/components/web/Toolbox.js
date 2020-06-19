@@ -1,5 +1,6 @@
 // @flow
 
+import tipButton from '@aeternity/superhero-button';
 import React, { Component } from 'react';
 
 import {
@@ -304,6 +305,12 @@ class Toolbox extends Component<Props, State> {
         });
 
         window.addEventListener('resize', this._onResize);
+
+        // not sure if only authed users need that button
+        //if (this.props.authed) {
+            tipButton('.tip-button-container', { size: 'icon', account: this.props._dominantSpeaker });
+        //}
+
     }
 
     /**
@@ -1263,6 +1270,7 @@ class Toolbox extends Component<Props, State> {
                         buttonsLeft.indexOf('closedcaptions') !== -1
                             && <ClosedCaptionButton />
                     }
+                    <div className = 'tip-button-container' />
                 </div>
                 <div className = 'button-group-center'>
                     { this._renderAudioButton() }
@@ -1384,7 +1392,8 @@ function _mapStateToProps(state) {
             || sharedVideoStatus === 'start'
             || sharedVideoStatus === 'pause',
         _visible: isToolboxVisible(state),
-        _visibleButtons: equals(visibleButtons, buttons) ? visibleButtons : buttons
+        _visibleButtons: equals(visibleButtons, buttons) ? visibleButtons : buttons,
+        _dominantSpeaker: state['features/base/participants'].find(({ dominantSpeaker }) => dominantSpeaker),
     };
 }
 
