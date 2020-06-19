@@ -189,7 +189,12 @@ type Props = {
     /**
      * Invoked to obtain translated strings.
      */
-    t: Function
+    t: Function,
+
+    /**
+     * aeternity address or chain name
+     */
+    _dominantSpeakerName: string
 };
 
 /**
@@ -306,13 +311,6 @@ class Toolbox extends Component<Props, State> {
         });
 
         window.addEventListener('resize', this._onResize);
-
-        console.log({ room });
-        // not sure if only authed users need that button
-        //if (this.props.authed) {
-            tipButton('.tip-button-container', { size: 'icon', account: this.props._dominantSpeaker });
-        //}
-
     }
 
     /**
@@ -331,6 +329,10 @@ class Toolbox extends Component<Props, State> {
             && this.props._dialog) {
             this._onSetOverflowVisible(false);
             this.props.dispatch(setToolbarHovered(false));
+        }
+
+        if (prevProps._dominantSpeakerName !== this.props._dominantSpeakerName) {
+            this.setTipButton(this.props._dominantSpeakerName);
         }
     }
 
@@ -368,6 +370,10 @@ class Toolbox extends Component<Props, State> {
                 { this._renderToolboxContent() }
             </div>
         );
+    }
+
+    setTipButton(account) {
+        tipButton('.tip-button-container', { size: 'icon', account });
     }
 
     /**
@@ -1395,7 +1401,7 @@ function _mapStateToProps(state) {
             || sharedVideoStatus === 'pause',
         _visible: isToolboxVisible(state),
         _visibleButtons: equals(visibleButtons, buttons) ? visibleButtons : buttons,
-        _dominantSpeaker: state['features/base/participants'].find(({ dominantSpeaker }) => dominantSpeaker),
+        _dominantSpeakerName: state['features/base/participants'].find(({ dominantSpeaker }) => dominantSpeaker)['name'],
     };
 }
 
