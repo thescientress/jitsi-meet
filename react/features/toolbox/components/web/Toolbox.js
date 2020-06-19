@@ -83,6 +83,7 @@ import OverflowMenuProfileItem from './OverflowMenuProfileItem';
 import ToolbarButton from './ToolbarButton';
 import VideoSettingsButton from './VideoSettingsButton';
 
+import { room } from '../../../../../conference';
 /**
  * The type of the React {@code Component} props of {@link Toolbox}.
  */
@@ -306,6 +307,7 @@ class Toolbox extends Component<Props, State> {
 
         window.addEventListener('resize', this._onResize);
 
+        console.log({ room });
         // not sure if only authed users need that button
         //if (this.props.authed) {
             tipButton('.tip-button-container', { size: 'icon', account: this.props._dominantSpeaker });
