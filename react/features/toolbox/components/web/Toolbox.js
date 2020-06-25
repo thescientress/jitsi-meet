@@ -27,7 +27,9 @@ import {
 import {
     getLocalParticipant,
     getParticipants,
-    participantUpdated
+    participantUpdated,
+    getParticipantById,
+    PARTICIPANT_ROLE
 } from '../../../base/participants';
 import { connect, equals } from '../../../base/redux';
 import { OverflowMenuItem } from '../../../base/toolbox';
@@ -44,7 +46,6 @@ import {
     LocalRecordingInfoDialog
 } from '../../../local-recording';
 import {
-    LiveStreamButton,
     RecordButton
 } from '../../../recording';
 import { SecurityDialogButton } from '../../../security';
@@ -254,6 +255,7 @@ class Toolbox extends Component<Props, State> {
         this._onToolbarToggleSharedVideo = this._onToolbarToggleSharedVideo.bind(this);
         this._onToolbarOpenLocalRecordingInfoDialog = this._onToolbarOpenLocalRecordingInfoDialog.bind(this);
         this._onShortcutToggleTileView = this._onShortcutToggleTileView.bind(this);
+        this._isModerator = this._isModerator.bind(this);
 
         this.state = {
             windowWidth: window.innerWidth
@@ -957,6 +959,19 @@ class Toolbox extends Component<Props, State> {
         return this.props._isGuest && this._shouldShowButton('profile');
     }
 
+    _isModerator: () => boolean;
+
+    /**
+     * Returns true if user is the moderator.
+     *
+     * @returns {boolean}
+     */
+    _isModerator() {
+        const localParticipant = getParticipantById(APP.store.getState(), this.props._localParticipantID);
+
+        return localParticipant?.role === PARTICIPANT_ROLE.MODERATOR;
+    }
+
     /**
      * Renders the list elements of the overflow menu.
      *
@@ -971,6 +986,7 @@ class Toolbox extends Component<Props, State> {
             _sharingVideo,
             t
         } = this.props;
+
 
         return [
             this._isProfileVisible()
@@ -988,13 +1004,10 @@ class Toolbox extends Component<Props, State> {
                     key = 'fullscreen'
                     onClick = { this._onToolbarToggleFullScreen }
                     text = { _fullScreen ? t('toolbar.exitFullScreen') : t('toolbar.enterFullScreen') } />,
-            <LiveStreamButton
-                key = 'livestreaming'
-                showLabel = { true } />,
             <RecordButton
                 key = 'record'
                 showLabel = { true } />,
-            this._shouldShowButton('sharedvideo')
+            this._isModerator() && this._shouldShowButton('sharedvideo')
                 && <OverflowMenuItem
                     accessibilityLabel = { t('toolbar.accessibilityLabel.sharedvideo') }
                     icon = { IconShareVideo }
@@ -1255,7 +1268,7 @@ class Toolbox extends Component<Props, State> {
         return (
             <div className = 'toolbox-content'>
                 <div className = 'button-group-left'>
-                    { buttonsLeft.indexOf('desktop') !== -1
+                    { this._isModerator() && buttonsLeft.indexOf('desktop') !== -1
                         && this._renderDesktopSharingButton() }
                     { buttonsLeft.indexOf('raisehand') !== -1
                         && <ToolbarButton
