@@ -20,8 +20,7 @@ const minimize
     = process.argv.indexOf('-p') !== -1
     || process.argv.indexOf('--optimize-minimize') !== -1;
 
-// const isDevelopment = process.env.NODE_ENV !== 'production' || process.argv.indexOf('-p') === -1;
-const isDevelopment = true;
+const isDevelopment = process.env.NODE_ENV !== 'production' || process.argv.indexOf('-p') === -1;
 
 /**
  * Build a Performance configuration object for the given size.
@@ -235,7 +234,7 @@ module.exports = [
         entry: {
             'app.bundle': './app.js'
         },
-        performance: getPerformanceHints(4 * 1024 * 1024)
+        performance: getPerformanceHints(10 * 1024 * 1024)
     }),
     Object.assign({}, config, {
         entry: {

@@ -1,9 +1,9 @@
-name: Deploy to staging
+name: Deploy to Production
 
 on:
-  push:
-    branches:
-      - develop
+  release:
+    # Only use the types keyword to narrow down the activity types that will trigger your workflow.
+    types: [published]
 
 jobs:
   run-ci:
@@ -18,17 +18,17 @@ jobs:
     - run: npm run lint
     - run: make
     - run: make source-package
-    - name: Deploy to Staging server
+    - name: Deploy to Production server
       uses: Pendect/action-rsyncer@v1.1.0
       env:
-        DEPLOY_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+        DEPLOY_KEY: ${{ secrets.PRODUCTION_SSH_KEY }}
       with:
         src: 'source_package/jitsi-meet/'
-        dest: ${{ secrets.DEPLOY_DEST }}
-    - name: Deploy Lua scripts to Staging server
+        dest: ${{ secrets.PRODUCTION_DEST }}
+    - name: Deploy Lua scripts to Production server
       uses: Pendect/action-rsyncer@v1.1.0
       env:
-          DEPLOY_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_KEY: ${{ secrets.PRODUCTION_SSH_KEY }}
       with:
           src: 'resources/prosody-plugins/'
-          dest: ${{ secrets.DEPLOY_PROSODY_PLUGIN_DEST }}
+          dest: ${{ secrets.PRODUCTION_PROSODY_PLUGIN_DEST }}
