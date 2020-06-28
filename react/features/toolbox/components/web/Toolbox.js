@@ -84,7 +84,6 @@ import OverflowMenuProfileItem from './OverflowMenuProfileItem';
 import ToolbarButton from './ToolbarButton';
 import VideoSettingsButton from './VideoSettingsButton';
 
-import { room } from '../../../../../conference';
 /**
  * The type of the React {@code Component} props of {@link Toolbox}.
  */
@@ -195,7 +194,7 @@ type Props = {
     /**
      * Flag showing whether local participant is moderator.
      */
-    _isModerator: boolean
+    _isModerator: boolean,
 
     /**
      * aeternity address or chain name
@@ -378,8 +377,15 @@ class Toolbox extends Component<Props, State> {
         );
     }
 
+    /**
+     * Implements set tooltip button {@link Component#render()}.
+     *
+     * @inheritdoc
+     * @returns {void}
+     */
     setTipButton(account) {
-        tipButton('.tip-button-container', { size: 'icon', account });
+        tipButton('.tip-button-container', { size: 'icon',
+            account });
     }
 
     /**
@@ -1410,7 +1416,7 @@ function _mapStateToProps(state) {
             || sharedVideoStatus === 'pause',
         _visible: isToolboxVisible(state),
         _visibleButtons: equals(visibleButtons, buttons) ? visibleButtons : buttons,
-        _dominantSpeakerName: state['features/base/participants'].find(({ dominantSpeaker }) => dominantSpeaker)?.name
+        _dominantSpeakerName: state['features/base/participants'].find(({ dominantSpeaker }) => dominantSpeaker)?.name,
         _isModerator: isLocalParticipantModerator(state)
     };
 }
