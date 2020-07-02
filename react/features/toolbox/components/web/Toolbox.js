@@ -1417,7 +1417,7 @@ function _mapStateToProps(state) {
             || sharedVideoStatus === 'pause',
         _visible: isToolboxVisible(state),
         _visibleButtons: equals(visibleButtons, buttons) ? visibleButtons : buttons,
-        _dominantSpeakerName: getDominantSpeaker(state)?.name || '',
+        _dominantSpeakerName: getDominantSpeaker(state)?.name ?? '',
         _isModerator: isLocalParticipantModerator(state)
     };
 }
