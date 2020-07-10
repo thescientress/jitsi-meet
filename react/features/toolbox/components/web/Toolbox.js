@@ -337,7 +337,13 @@ class Toolbox extends Component<Props, State> {
             this.props.dispatch(setToolbarHovered(false));
         }
 
-        if (prevProps._dominantSpeakerName !== this.props._dominantSpeakerName) {
+        // todo: move to utils
+        const isAccountorChainName = str => str.startsWith('ak_') || str.endsWith('.chain');
+
+        const { _dominantSpeakerName: nextDominantSpeakerName } = this.props;
+
+        if ((prevProps._dominantSpeakerName !== nextDominantSpeakerName)
+            && isAccountorChainName(nextDominantSpeakerName)) {
             this.setTipButton(this.props._dominantSpeakerName);
         }
     }
