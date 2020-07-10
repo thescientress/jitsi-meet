@@ -338,12 +338,12 @@ class Toolbox extends Component<Props, State> {
         }
 
         // todo: move to utils
-        const isAccountorChainName = str => str.startsWith('ak_') || str.endsWith('.chain');
+        const isAccountOrChainName = str => str.startsWith('ak_') || str.endsWith('.chain');
 
         const { _dominantSpeakerName: nextDominantSpeakerName } = this.props;
 
         if ((prevProps._dominantSpeakerName !== nextDominantSpeakerName)
-            && isAccountorChainName(nextDominantSpeakerName)) {
+            && isAccountOrChainName(nextDominantSpeakerName)) {
             this.setTipButton(this.props._dominantSpeakerName);
         }
     }
