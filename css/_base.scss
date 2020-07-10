@@ -104,19 +104,24 @@ form {
 .watermark {
     display: block;
     position: absolute;
-    top: 15;
+    top: $watermarkTop;
     width: $watermarkWidth;
     height: $watermarkHeight;
     background-size: contain;
     background-repeat: no-repeat;
     z-index: $zindex2;
+
+    @media (max-width: $desktopWidth) {
+        display: none;
+    }
 }
 
 .leftwatermark {
     left: 32px;
-    top: 32px;
     background-image: url($defaultWatermarkLink);
     background-position: center left;
+    background-color: #21222c40;
+    border-radius: 5px;
 }
 
 .rightwatermark {
