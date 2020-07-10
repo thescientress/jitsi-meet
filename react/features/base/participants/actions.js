@@ -17,7 +17,6 @@ import {
 } from './actionTypes';
 import {
     getLocalParticipant,
-    getNormalizedDisplayName,
     getParticipantDisplayName
 } from './functions';
 
@@ -375,7 +374,7 @@ export function participantUpdated(participant = {}) {
     };
 
     if (participant.name) {
-        participantToUpdate.name = getNormalizedDisplayName(participant.name);
+        participantToUpdate.name = participant.name;
     }
 
     return {
