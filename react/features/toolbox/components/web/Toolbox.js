@@ -4,6 +4,9 @@ import tipButton from '@aeternity/superhero-button';
 import React, { Component } from 'react';
 
 import {
+    isAccountOrChainName
+} from '../../../aeternity';
+import {
     ACTION_SHORTCUT_TRIGGERED,
     createShortcutEvent,
     createToolbarEvent,
@@ -337,14 +340,11 @@ class Toolbox extends Component<Props, State> {
             this.props.dispatch(setToolbarHovered(false));
         }
 
-        // todo: move to utils
-        const isAccountOrChainName = str => str.startsWith('ak_') || str.endsWith('.chain');
+        const { _dominantSpeakerName: currentDominantSpeakerName } = this.props;
 
-        const { _dominantSpeakerName: nextDominantSpeakerName } = this.props;
-
-        if ((prevProps._dominantSpeakerName !== nextDominantSpeakerName)
-            && isAccountOrChainName(nextDominantSpeakerName)) {
-            this.setTipButton(this.props._dominantSpeakerName);
+        if ((prevProps._dominantSpeakerName !== currentDominantSpeakerName)
+            && isAccountOrChainName(currentDominantSpeakerName)) {
+            this.setTipButton(currentDominantSpeakerName);
         }
     }
 
