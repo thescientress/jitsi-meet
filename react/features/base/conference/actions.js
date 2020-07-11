@@ -14,6 +14,7 @@ import { setAudioMuted, setVideoMuted } from '../media';
 import {
     dominantSpeakerChanged,
     getLocalParticipant,
+    getNormalizedDisplayName,
     participantConnectionStatusChanged,
     participantKicked,
     participantMutedUs,
@@ -163,7 +164,7 @@ function _addConferenceListeners(conference, dispatch) {
         (id, displayName) => dispatch(participantUpdated({
             conference,
             id,
-            name: displayName
+            name: getNormalizedDisplayName(displayName)
         })));
 
     conference.on(
