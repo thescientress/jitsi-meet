@@ -19,7 +19,7 @@ const TipButton = async ({ account }: Props) => {
     const [ rate, setRate ] = useState();
 
     const getPriceRates = async () => '';
-    const getRate = async cur => await getPriceRates[cur];
+    const getRate = async () => await getPriceRates[currency];
 
     const getCurrency = function(amount) {
         return (amount * rate).toLocaleString('en-US', {
@@ -29,10 +29,10 @@ const TipButton = async ({ account }: Props) => {
     };
 
     useEffect(async () => {
+        setCurrency(CURRENCY);
         setRate(
             await getRate()
         );
-        setCurrency(CURRENCY);
     });
 
     const toCurrency = ({ event: { target: value } }) => getCurrency(value);
