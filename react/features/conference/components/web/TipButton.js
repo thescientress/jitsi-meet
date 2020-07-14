@@ -16,7 +16,7 @@ const BACKEND_URL = 'https://raendom-backend.z52da5wt.xyz';
 const TipButton = async ({ account }: Props) => {
     const [ isOpen, toggleTip ] = useState(false);
     const [ currency, setCurrency ] = useState(CURRENCY);
-    const [ rate, setRate ] = useState();
+    const [ rate, setRate ] = useState(null);
 
     const getPriceRates = async () => '';
     const getRate = async () => await getPriceRates[currency];
@@ -38,7 +38,7 @@ const TipButton = async ({ account }: Props) => {
     const toCurrency = ({ event: { target: value } }) => getCurrency(value);
 
     // eslint-disable-next-line no-unused-vars
-    const sendTipComment = async function({ id, text, author = account, signCb, parentId }) {
+    const sendTipComment = async function({ id, text = `tip to ${account}`, author = account, signCb, parentId }) {
         const sendComment = postParam => fetch(`${BACKEND_URL}/${'comment/api'}`, {
             method: 'post',
             body: JSON.stringify(postParam),
