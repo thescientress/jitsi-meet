@@ -116,7 +116,7 @@ class TipButton extends Component<Props, State> {
     /**
      * Send the tip with comment `tip to ${this.props.account}` to the account.
      *
-     * @param {{ id: string, account: string, text: string, author: string, signCb: Function, parentId: number }} options - Options.
+     * @param {{ id: string, account: string, text: string, author: string, signCb: Function, parentId: string }} options - Options.
      * @returns {Promise}
      */
     async _onSendTip({
@@ -124,7 +124,7 @@ class TipButton extends Component<Props, State> {
         text = `tip to ${this.props.account}`,
         author = this.props.account,
         signCb,
-        parentId
+        parentId = ''
     }) {
         // todo: move to onChange
         if (!isAccountOrChainName(author)) {
@@ -133,23 +133,24 @@ class TipButton extends Component<Props, State> {
             return;
         }
 
-        const sendComment = postParam => fetch(`${BACKEND_URL}/${'comment/api'}`, {
+        const sendComment = body => fetch(`${BACKEND_URL}/${'comment/api'}`, {
             method: 'post',
-            body: JSON.stringify(postParam),
+            body: JSON.stringify(body),
             headers: { 'Content-Type': 'application/json' }
         });
-
-        const responseChallenge = await sendComment({ id,
+        const { challenge } = await sendComment({
+            id,
             text,
-            author });
-        const signedChallenge = await signCb(responseChallenge.challenge);
-        const respondChallenge = {
-            challenge: responseChallenge.challenge,
-            signature: signedChallenge,
+            author
+        });
+        const signature = await signCb(challenge);
+        const responce = {
+            challenge,
+            signature,
             parentId
         };
 
-        return sendComment(respondChallenge);
+        return sendComment(responce);
     }
 
     /**
