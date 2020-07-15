@@ -1,16 +1,21 @@
 // @flow
+/* eslint-disable comma-dangle, max-len */
 
 import React, { Component } from 'react';
 
-// todo:
-declare type AeternityName = string;
+import {
+    isAccountOrChainName
+} from '../../../aeternity';
+
+// todo: as part of this comonent and print the error if it's not valid
+// const isAccountOrChainName = isAccountOrChainNameUtil;
 
 type Props = {
 
     /**
      * Account or chain name
      */
-    account: AeternityName,
+    account: string,
 };
 
 type State = {
@@ -20,6 +25,21 @@ type State = {
      */
     isOpen: boolean,
 
+    /**
+     * Fiat currency.
+     */
+    currency: string,
+
+    /**
+     * AE value
+     *
+     */
+    value: string,
+
+    /**
+     * Any error
+     */
+    error: string,
 };
 
 const BACKEND_URL = 'https://raendom-backend.z52da5wt.xyz';
@@ -39,7 +59,9 @@ class TipButton extends Component<Props, State> {
 
         this.state = {
             isOpen: false,
-            currency: 'eur'
+            currency: 'eur',
+            value: '',
+            error: ''
         };
     }
 
@@ -52,6 +74,16 @@ class TipButton extends Component<Props, State> {
      */
     _changeCurrency(currency) {
         this.setState({ currency });
+    }
+
+    /**
+     * Toggle tooltip.
+     *
+     * @param {string} currency - New currency.
+     * @returns {void}
+     */
+    _onToggleTooltip() {
+        this.setState({ isOpen: !this.state.isOpen });
     }
 
     /**
@@ -82,9 +114,9 @@ class TipButton extends Component<Props, State> {
     }
 
     /**
-     * Sehnd the tip to some account.
+     * Send the tip with comment `tip to ${this.props.account}` to the account.
      *
-     * @param {{ id: string, account: string, author: string, signCb: Function, parentId: number }} options - Options.
+     * @param {{ id: string, account: string, text: string, author: string, signCb: Function, parentId: number }} options - Options.
      * @returns {Promise}
      */
     async _onSendTip({
@@ -94,6 +126,13 @@ class TipButton extends Component<Props, State> {
         signCb,
         parentId
     }) {
+        // todo: move to onChange
+        if (!isAccountOrChainName(author)) {
+            this.setState({ error: 'value is not account or chain name' });
+
+            return;
+        }
+
         const sendComment = postParam => fetch(`${BACKEND_URL}/${'comment/api'}`, {
             method: 'post',
             body: JSON.stringify(postParam),
@@ -124,7 +163,7 @@ class TipButton extends Component<Props, State> {
 
         return (
             <div>
-                <button>Tip</button>
+                <button onClick = { this._onToggleTooltip }>Tip</button>
                 {isOpen && (
                     <div>
                         <input type = 'text' />
