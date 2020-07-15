@@ -63,6 +63,12 @@ class TipButton extends Component<Props, State> {
             value: '',
             error: ''
         };
+
+        this._changeCurrency = this._changeCurrency.bind(this);
+        this._onToggleTooltip = this._onToggleTooltip.bind(this);
+        this._tokensToCurrency = this._tokensToCurrency.bind(this);
+        this._onSendTip = this._onSendTip.bind(this);
+        this._onChangeValue = this._onChangeValue.bind(this);
     }
 
     /**
@@ -84,6 +90,16 @@ class TipButton extends Component<Props, State> {
      */
     _onToggleTooltip() {
         this.setState({ isOpen: !this.state.isOpen });
+    }
+
+    /**
+     * Change ae value.
+     *
+     * @param {Object} event - Contains new value.
+     * @returns {void}
+     */
+    _onChangeValue({ target: { value } }) {
+        this.setState({ value });
     }
 
     /**
@@ -138,19 +154,21 @@ class TipButton extends Component<Props, State> {
             body: JSON.stringify(body),
             headers: { 'Content-Type': 'application/json' }
         });
+
         const { challenge } = await sendComment({
             id,
             text,
             author
         });
         const signature = await signCb(challenge);
-        const responce = {
+
+        const commentPayload = {
             challenge,
             signature,
             parentId
         };
 
-        return sendComment(responce);
+        return sendComment(commentPayload);
     }
 
     /**
@@ -166,8 +184,12 @@ class TipButton extends Component<Props, State> {
             <div>
                 <button onClick = { this._onToggleTooltip }>Tip</button>
                 {isOpen && (
-                    <div>
-                        <input type = 'text' />
+                    <div style = {{ background: 'red' }}>
+                        <input
+                            onChange = { this._onChangeValue }
+                            type = 'text'
+                            value = { this.state.value }
+                        />
                         <button onClick = { this._onSendTip }>Send</button>
                     </div>
                 )}
