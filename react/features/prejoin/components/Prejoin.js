@@ -8,6 +8,7 @@ import { translate } from '../../base/i18n';
 import { Icon, IconPhone, IconVolumeOff } from '../../base/icons';
 import { connect } from '../../base/redux';
 import { getDisplayName, updateSettings } from '../../base/settings';
+import TipButton from '../../conference/components/web/TipButton';
 import { isGuest } from '../../invite';
 import { VideoSettingsButton, AudioSettingsButton } from '../../toolbox';
 import {
@@ -29,6 +30,7 @@ import DeviceStatus from './preview/DeviceStatus';
 import ParticipantName from './preview/ParticipantName';
 import Preview from './preview/Preview';
 
+declare var APP: Object;
 
 type Props = {
 
@@ -231,6 +233,10 @@ class Prejoin extends Component<Props, State> {
                     <div className = 'prejoin-input-area'>
                         <div className = 'prejoin-title'>
                             {t('prejoin.joinMeeting')}
+                        </div>
+
+                        <div>
+                            <TipButton account = 'some.chain' />
                         </div>
 
                         <CopyMeetingUrl />

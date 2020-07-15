@@ -3,6 +3,9 @@
 
 import React, { Component } from 'react';
 
+import TIPPING_INTERFACE from 'superhero-utls/src/contracts/TippingInterface.aes';
+
+import { client } from '../../../../client';
 import {
     isAccountOrChainName
 } from '../../../aeternity';
@@ -32,7 +35,6 @@ type State = {
 
     /**
      * AE value
-     *
      */
     value: string,
 
@@ -40,9 +42,36 @@ type State = {
      * Any error
      */
     error: string,
+
+    /**
+     * Is show loading
+     */
+    showLoading: boolean,
+
+    /**
+     * Message for the author
+     */
+    message: string,
 };
 
-const BACKEND_URL = 'https://raendom-backend.z52da5wt.xyz';
+const URLS = {
+    SUPER: 'https://superhero.com',
+    RAENDOM: 'https://raendom-backend.z52da5wt.xyz'
+};
+
+// todo: refact
+let contract;
+const aeternity = {
+    initTippingContractIfNeeded:  async () => {
+        if (!client) throw new Error('Init sdk first');
+        if (contract) return;
+        contract = await client.getContractInstance(TIPPING_INTERFACE, { contractAddress });
+    },
+    tip:  async (url, title, amount) => {
+        await initTippingContractIfNeeded();
+        return contract.methods.tip(url, title, { amount });
+    }
+}
 
 /**
  * Aeternity tip button react version.
@@ -61,13 +90,16 @@ class TipButton extends Component<Props, State> {
             isOpen: false,
             currency: 'eur',
             value: '',
-            error: ''
+            message: `button host ${window.location.host} tip to ${this.props.account}`,
+            error: '',
+            showLoading: false,
         };
 
         this._changeCurrency = this._changeCurrency.bind(this);
         this._onToggleTooltip = this._onToggleTooltip.bind(this);
         this._tokensToCurrency = this._tokensToCurrency.bind(this);
         this._onSendTip = this._onSendTip.bind(this);
+        this._onSendTipComment = this._onSendTipComment.bind(this);
         this._onChangeValue = this._onChangeValue.bind(this);
     }
 
@@ -130,14 +162,14 @@ class TipButton extends Component<Props, State> {
     }
 
     /**
-     * Send the tip with comment `tip to ${this.props.account}` to the account.
+     * Send the tip comment, not the tip itself.
      *
      * @param {{ id: string, account: string, text: string, author: string, signCb: Function, parentId: string }} options - Options.
      * @returns {Promise}
      */
-    async _onSendTip({
+    async _onSendTipComment({
         id,
-        text = `tip to ${this.props.account}`,
+        text = this.state.message,
         author = this.props.account,
         signCb,
         parentId = ''
@@ -149,7 +181,7 @@ class TipButton extends Component<Props, State> {
             return;
         }
 
-        const sendComment = body => fetch(`${BACKEND_URL}/${'comment/api'}`, {
+        const sendComment = body => fetch(`${URLS.RAENDOM}/${'comment/api'}`, {
             method: 'post',
             body: JSON.stringify(body),
             headers: { 'Content-Type': 'application/json' }
@@ -169,6 +201,41 @@ class TipButton extends Component<Props, State> {
         };
 
         return sendComment(commentPayload);
+    }
+
+    /**
+     * Send the tip itself.
+     *
+     * @returns {void}
+     */
+    async _onSendTip() {
+        if (!this.props.account) {
+            return;
+        }
+
+        this.setState({ showLoading: true });
+
+        const amount = util.aeToAtoms(this.state.value);
+
+        let url = '';
+
+        if (this.comment) {
+            url = `${URLS.SUPER}/tip/${this.comment.tipId}/comment/${this.comment.id}`;
+        } else if (this.userAddress) {
+            url = `${URLS.SUPER}/user-profile/${this.userAddress}`;
+        } else {
+            url = `${URLS.SUPER}/tip/${this.tip.id}`;
+        }
+
+        try {
+            await aeternity.tip(url, this.state.message, amount);
+            // await Backend.cacheInvalidateTips().catch(console.error);
+        } catch (e) {
+            console.error(e);
+            this.setState({ error: `error ${JSON.stringify(e)}` });
+        }
+
+        // todo: retip
     }
 
     /**
