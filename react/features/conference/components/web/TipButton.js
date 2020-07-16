@@ -219,13 +219,7 @@ class TipButton extends Component<Props, State> {
 
         let url = '';
 
-        if (this.comment) {
-            url = `${URLS.SUPER}/tip/${this.comment.tipId}/comment/${this.comment.id}`;
-        } else if (this.userAddress) {
-            url = `${URLS.SUPER}/user-profile/${this.userAddress}`;
-        } else {
-            url = `${URLS.SUPER}/tip/${this.tip.id}`;
-        }
+        url = `${URLS.SUPER}/user-profile/${this.props.account}`;
 
         try {
             await aeternity.tip(url, this.state.message, amount);
