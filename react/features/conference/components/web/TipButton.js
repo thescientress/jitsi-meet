@@ -10,6 +10,7 @@ import { client } from '../../../../client';
 import {
     isAccountOrChainName
 } from '../../../aeternity';
+import { createDeepLinkUrl } from '../../../base/util/createDeepLinkUrl';
 
 
 type Props = {
@@ -232,7 +233,7 @@ class TipButton extends Component<Props, State> {
         const url = `${URLS.SUPER}/user-profile/${this.props.account}`;
 
         console.log('aeternity.contract is still `null`');
-        console.log({ url, message: this.state.message, amount, contract: aeternity.contract, client })
+        console.log({ url, message: this.state.message, amount, contract: aeternity.contract, client });
         // tip with sdk [wip]
         try {
             await aeternity.tip(url, this.state.message, amount);
@@ -240,6 +241,19 @@ class TipButton extends Component<Props, State> {
             console.error(e);
             this.setState({ error: `error ${JSON.stringify(e)}` });
         }
+    }
+
+    /**
+     * Create tip deeplink.
+     *
+     * @returns {Object}
+     */
+    _deepLinkTip() {
+        const url = createDeepLinkUrl({ type: 'tip' });
+
+        url.searchParams.set('url', `https://superhero.com/user-profile/${this.props.account}`);
+
+        return url;
     }
 
     /**
@@ -253,6 +267,13 @@ class TipButton extends Component<Props, State> {
 
         return (
             <div>
+                <a
+                    href = { this._deepLinkTip() }
+                    rel = 'noopener noreferrer'
+                    target = '_blank'
+                >
+                    Deep link Tip
+                </a>
                 <button onClick = { this._onToggleTooltip }>Tip</button>
                 {isOpen && (
                     <div style = {{ background: 'red' }}>
