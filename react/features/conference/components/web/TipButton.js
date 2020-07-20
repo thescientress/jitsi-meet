@@ -2,6 +2,7 @@
 /* eslint-disable comma-dangle, max-len */
 
 import React, { Component } from 'react';
+import BigNumber from 'bignumber.js';
 
 import TIPPING_INTERFACE from 'superhero-utls/src/contracts/TippingInterface.aes';
 
@@ -10,8 +11,6 @@ import {
     isAccountOrChainName
 } from '../../../aeternity';
 
-// todo: as part of this comonent and print the error if it's not valid
-// const isAccountOrChainName = isAccountOrChainNameUtil;
 
 type Props = {
 
@@ -58,20 +57,30 @@ const URLS = {
     SUPER: 'https://superhero.com',
     RAENDOM: 'https://raendom-backend.z52da5wt.xyz'
 };
+const CONTRACT_ADDRESS = 'ct_2AfnEfCSZCTEkxL5Yoi4Yfq6fF7YapHRaFKDJK3THMXMBspp5z';
 
-// todo: refact
 let contract;
 const aeternity = {
-    initTippingContractIfNeeded:  async () => {
-        if (!client) throw new Error('Init sdk first');
-        if (contract) return;
-        contract = await client.getContractInstance(TIPPING_INTERFACE, { contractAddress });
+    async initTippingContractIfNeeded(): void {
+        if (!client) {
+            throw new Error('Init sdk first');
+        }
+        if (contract) {
+            return;
+        }
+        contract = await client.getContractInstance(TIPPING_INTERFACE, { contractAddress: CONTRACT_ADDRESS });
     },
-    tip:  async (url, title, amount) => {
-        await initTippingContractIfNeeded();
-        return contract.methods.tip(url, title, { amount });
+    async tip(url, title, amount): Promise {
+        await this.initTippingContractIfNeeded();
+
+        contract.methods.tip(url, title, { amount });
+    },
+    util: {
+        aeToAtoms(ae) {
+            return (new BigNumber(ae)).times(new BigNumber(1000000000000000000));
+        }
     }
-}
+};
 
 /**
  * Aeternity tip button react version.
@@ -215,27 +224,17 @@ class TipButton extends Component<Props, State> {
 
         this.setState({ showLoading: true });
 
-        const amount = util.aeToAtoms(this.state.value);
+        const amount = aeternity.util.aeToAtoms(this.state.value);
+        const url = `${URLS.SUPER}/user-profile/${this.props.account}`;
 
-        let url = '';
-
-        if (this.comment) {
-            url = `${URLS.SUPER}/tip/${this.comment.tipId}/comment/${this.comment.id}`;
-        } else if (this.userAddress) {
-            url = `${URLS.SUPER}/user-profile/${this.userAddress}`;
-        } else {
-            url = `${URLS.SUPER}/tip/${this.tip.id}`;
-        }
-
+        console.log({ url, title: this.state.message, amount });
+        // tip with sdk
         try {
             await aeternity.tip(url, this.state.message, amount);
-            // await Backend.cacheInvalidateTips().catch(console.error);
         } catch (e) {
             console.error(e);
             this.setState({ error: `error ${JSON.stringify(e)}` });
         }
-
-        // todo: retip
     }
 
     /**
