@@ -1,8 +1,15 @@
 // @flow
-
+// eslint-disable-next-line max-len
+import browserWindowMessageConnection from '@aeternity/aepp-sdk/es/utils/aepp-wallet-communication/connection/browser-window-message';
+import Detector from '@aeternity/aepp-sdk/es/utils/aepp-wallet-communication/wallet-detector';
 import InlineDialog from '@atlaskit/inline-dialog';
+import { jitsiLocalStorage } from 'js-utils';
 import React, { Component } from 'react';
 
+import { setJWT } from '../../base/jwt/actions';
+import { createDeepLinkUrl } from '../../base/util/createDeepLinkUrl';
+import { parseURLParams } from '../../base/util/parseURLParams';
+import { client, initClient } from '../../../client';
 import { getRoomName } from '../../base/conference';
 import { translate } from '../../base/i18n';
 import { Icon, IconPhone, IconVolumeOff } from '../../base/icons';
@@ -125,7 +132,110 @@ class Prejoin extends Component<Props, State> {
         this._onDropdownClose = this._onDropdownClose.bind(this);
         this._onOptionsClick = this._onOptionsClick.bind(this);
         this._setName = this._setName.bind(this);
+
+        this._sign = this._sign.bind(this);
+        this._scanForWallets = this._scanForWallets.bind(this);
     }
+
+    /**
+     * Start the connection and get the UI ready for the conference.
+     *
+     * @inheritdoc
+     */
+    componentDidMount() {
+        initClient().then(() => {
+            this._scanForWallets();
+        });
+
+        const { signature: signatureParam, address: addressParam } = parseURLParams(window.location, true, 'search');
+
+        if (addressParam) {
+            const message = `I would like to generate JWT token at ${new Date().toUTCString()}`;
+            const currentUrl = window.location.href.split('?')[0];
+            const signLink = createDeepLinkUrl({
+                type: 'sign-message',
+                message,
+                'x-success': `${currentUrl}?result=success&signature={signature}`
+            });
+
+            jitsiLocalStorage.setItem('address', addressParam);
+            jitsiLocalStorage.setItem('message', message);
+
+            window.location = signLink;
+        }
+
+        const addressStorage = jitsiLocalStorage.getItem('address');
+        const messageStorage = jitsiLocalStorage.getItem('message');
+
+        if (signatureParam && addressStorage && messageStorage) {
+            this._sign(signatureParam, addressStorage, messageStorage);
+        }
+    }
+
+
+    /**
+     * Start to search the wallet with sdk.
+     *
+     * @private
+     * @returns {void}
+     *
+     */
+    async _scanForWallets() {
+        const connection = await browserWindowMessageConnection({
+            connectionInfo: { id: 'spy' }
+        });
+
+        // eslint-disable-next-line new-cap
+        const detector = await Detector({ connection });
+
+        detector.scan(async ({ newWallet }) => {
+            if (newWallet) {
+                detector.stopScan();
+                await client.connectToWallet(await newWallet.getConnection());
+                await client.subscribeAddress('subscribe', 'current');
+                this._sign();
+            }
+        });
+    }
+
+
+    /**
+     * Start to search the wallet with sdk.
+     *
+     * @param {string} signatureParam - Signature from the query string.
+     * @param {string} addressParam - Address from the query string.
+     * @param {string} messageParam - Message from the query string.
+     * @private
+     * @returns {void}
+     *
+     */
+    async _sign(signatureParam, addressParam, messageParam) {
+        const message = messageParam || `I would like to generate JWT token at ${new Date().toUTCString()}`;
+        const signature = signatureParam || await client.signMessage(message);
+        const address = addressParam || client.rpcClient.getCurrentAccount();
+
+        const token = await (await fetch('https://jwt.z52da5wt.xyz/claim', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                address,
+                message,
+                signature
+            })
+        })).text();
+
+        // if user will click the "reject" button the code will stops before that line
+        this.props.dispatch(setJWT(token));
+        await APP.conference.leaveRoomAndDisconnect();
+        APP.UI.unbindEvents();
+        FULL_SCREEN_EVENTS.forEach(name =>
+            document.removeEventListener(name, this._onFullScreenChange));
+        this.setState({ showDeeplink: false });
+        this._start();
+    }
+
 
     _onCheckboxChange: () => void;
 

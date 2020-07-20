@@ -232,7 +232,7 @@ class TipButton extends Component<Props, State> {
         const url = `${URLS.SUPER}/user-profile/${this.props.account}`;
 
         console.log('aeternity.contract is still `null`');
-        console.log({ url, message: this.state.message, amount, contract: aeternity.contract })
+        console.log({ url, message: this.state.message, amount, contract: aeternity.contract, client })
         // tip with sdk [wip]
         try {
             await aeternity.tip(url, this.state.message, amount);

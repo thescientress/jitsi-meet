@@ -45,6 +45,7 @@
     "amplitude-js": "4.5.2",
     "base64-js": "1.3.1",
     "bc-css-flags": "3.0.0",
+    "bignumber.js": "^9.0.0",
     "dropbox": "4.0.9",
     "i18n-iso-countries": "3.7.8",
     "i18next": "17.0.6",
@@ -92,12 +93,12 @@
     "redux-thunk": "2.2.0",
     "rnnoise-wasm": "github:jitsi/rnnoise-wasm.git#db96d11f175a22ef56c7db1ba9550835b716e615",
     "styled-components": "3.4.9",
+    "superhero-utls": "git+https://git@github.com/aeternity/superhero-ui.git#master",
     "util": "0.12.1",
     "uuid": "3.1.0",
     "windows-iana": "^3.1.0",
     "xmldom": "0.1.27",
-    "zxcvbn": "4.4.2",
-    "superhero-utls": "git+https://git@github.com/aeternity/superhero-ui.git#master"
+    "zxcvbn": "4.4.2"
   },
   "devDependencies": {
     "@babel/core": "7.5.5",
