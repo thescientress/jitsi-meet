@@ -59,21 +59,25 @@ const URLS = {
 };
 const CONTRACT_ADDRESS = 'ct_2AfnEfCSZCTEkxL5Yoi4Yfq6fF7YapHRaFKDJK3THMXMBspp5z';
 
-let contract;
 const aeternity = {
+    contract: null,
     async initTippingContractIfNeeded(): void {
         if (!client) {
             throw new Error('Init sdk first');
         }
-        if (contract) {
+        if (this.contract) {
             return;
         }
-        contract = await client.getContractInstance(TIPPING_INTERFACE, { contractAddress: CONTRACT_ADDRESS });
+
+        this.contract = await client.getContractInstance(TIPPING_INTERFACE, { contractAddress: CONTRACT_ADDRESS });
     },
     async tip(url, title, amount): Promise {
-        await this.initTippingContractIfNeeded();
-
-        contract.methods.tip(url, title, { amount });
+        this.initTippingContractIfNeeded().then(
+            () => {
+                console.log('NOT FIRE');
+                this.contract.methods.tip(url, title, { amount });
+            }
+        );
     },
     util: {
         aeToAtoms(ae) {
@@ -227,6 +231,8 @@ class TipButton extends Component<Props, State> {
         const amount = aeternity.util.aeToAtoms(this.state.value);
         const url = `${URLS.SUPER}/user-profile/${this.props.account}`;
 
+        console.log('aeternity.contract is still `null`');
+        console.log({ url, message: this.state.message, amount, contract: aeternity.contract })
         // tip with sdk [wip]
         try {
             await aeternity.tip(url, this.state.message, amount);
