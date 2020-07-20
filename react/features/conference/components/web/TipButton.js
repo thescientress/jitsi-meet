@@ -227,8 +227,7 @@ class TipButton extends Component<Props, State> {
         const amount = aeternity.util.aeToAtoms(this.state.value);
         const url = `${URLS.SUPER}/user-profile/${this.props.account}`;
 
-        console.log({ url, title: this.state.message, amount });
-        // tip with sdk
+        // tip with sdk [wip]
         try {
             await aeternity.tip(url, this.state.message, amount);
         } catch (e) {
