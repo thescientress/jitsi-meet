@@ -115,6 +115,7 @@ class TipButton extends Component<Props, State> {
         this._onSendTip = this._onSendTip.bind(this);
         this._onSendTipComment = this._onSendTipComment.bind(this);
         this._onChangeValue = this._onChangeValue.bind(this);
+        this._onTipDeepLink = this._onTipDeepLink.bind(this);
     }
 
     /**
@@ -244,7 +245,7 @@ class TipButton extends Component<Props, State> {
     }
 
     /**
-     * Create tip deeplink.
+     * Create tip deeplink URL object.
      *
      * @returns {Object}
      */
@@ -254,6 +255,15 @@ class TipButton extends Component<Props, State> {
         url.searchParams.set('url', `https://superhero.com/user-profile/${this.props.account}`);
 
         return url;
+    }
+
+    /**
+     * On tip deeplink popup.
+     *
+     * @returns {void}
+     */
+    _onTipDeepLink() {
+        window.open(this._deepLinkTip().toString(), 'popup', 'width=374, height=600, top=20, left=20');
     }
 
     /**
@@ -267,13 +277,9 @@ class TipButton extends Component<Props, State> {
 
         return (
             <div>
-                <a
-                    href = { this._deepLinkTip() }
-                    rel = 'noopener noreferrer'
-                    target = '_blank'
-                >
+                <button onClick = { this._onTipDeepLink }>
                     Deep link Tip
-                </a>
+                </button>
                 <button onClick = { this._onToggleTooltip }>Tip</button>
                 {isOpen && (
                     <div style = {{ background: 'red' }}>
