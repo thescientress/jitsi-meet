@@ -12,6 +12,7 @@
     left: 0px;
     right: 0px;
     overflow: hidden;
+    background: $hangupColor;
 }
 
 #largeVideoBackgroundContainer,
@@ -525,6 +526,18 @@
             left: 60%;
         }
     }
+
+    @media (max-width: $mobileWidth) {
+        #dominantSpeakerAvatarContainer,
+        .dynamic-shadow {
+            width: 110px;
+            height: 110px;
+        }
+
+        .dynamic-shadow {
+            left: 65%;
+        }
+    }
 }
 
 .avatar-container {
@@ -536,10 +549,6 @@
     width: auto;
     overflow: hidden;
 
-    @media (max-width: $desktopWidth) {
-        width: 30px !important;
-    }
-
     .userAvatar {
         height: 100% !important;
         object-fit: cover;
@@ -547,11 +556,6 @@
         top: 0px;
         left: 0px;
         position: absolute;
-
-        @media (max-width: $desktopWidth) {
-            height: 30px !important;
-            width: 30px !important;
-        }
     }
 }
 

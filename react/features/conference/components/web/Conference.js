@@ -6,6 +6,7 @@ import VideoLayout from '../../../../../modules/UI/videolayout/VideoLayout';
 import { getConferenceNameForTitle } from '../../../base/conference';
 import { connect, disconnect } from '../../../base/connection';
 import { translate } from '../../../base/i18n';
+import { authWithJWTDeeplink } from '../../../base/jwt/functions';
 import { connect as reactReduxConnect } from '../../../base/redux';
 import { Chat } from '../../../chat';
 import { Filmstrip } from '../../../filmstrip';
@@ -138,8 +139,9 @@ class Conference extends AbstractConference<Props, *> {
     componentDidMount() {
         document.title = `${this.props._roomName} | ${interfaceConfig.APP_NAME}`;
 
-        this._start();
+        authWithJWTDeeplink();
 
+        this._start();
     }
 
     /**

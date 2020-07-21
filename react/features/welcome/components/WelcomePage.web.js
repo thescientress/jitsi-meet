@@ -6,6 +6,7 @@ import React from 'react';
 import { isMobileBrowser } from '../../base/environment/utils';
 import { translate } from '../../base/i18n';
 import { Icon, IconWarning } from '../../base/icons';
+import { authWithJWTDeeplink } from '../../base/jwt/functions';
 import { Watermarks } from '../../base/react';
 import { connect } from '../../base/redux';
 import isInIframe from '../../base/util/inIframe';
@@ -139,6 +140,8 @@ class WelcomePage extends AbstractWelcomePage {
                 this._additionalToolbarContentTemplate.content.cloneNode(true)
             );
         }
+
+        authWithJWTDeeplink();
     }
 
     /**
@@ -202,7 +205,9 @@ class WelcomePage extends AbstractWelcomePage {
                             <div className = 'enter-room-title'>
                                 { t('welcomepage.enterRoomTitle') }
                             </div>
-                            <form onSubmit = { this._onFormSubmit }>
+                            <form
+                                autoComplete = 'off'
+                                onSubmit = { this._onFormSubmit }>
                                 <input
                                     autoFocus = { true }
                                     className = 'enter-room-input'
