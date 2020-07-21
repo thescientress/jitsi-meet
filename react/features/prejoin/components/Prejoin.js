@@ -1,15 +1,10 @@
 // @flow
-// eslint-disable-next-line max-len
-import browserWindowMessageConnection from '@aeternity/aepp-sdk/es/utils/aepp-wallet-communication/connection/browser-window-message';
-import Detector from '@aeternity/aepp-sdk/es/utils/aepp-wallet-communication/wallet-detector';
 import InlineDialog from '@atlaskit/inline-dialog';
 import React, { Component } from 'react';
 
-import { client, initClient } from '../../../client';
 import { getRoomName } from '../../base/conference';
 import { translate } from '../../base/i18n';
 import { Icon, IconPhone, IconVolumeOff } from '../../base/icons';
-import { _sign } from '../../base/jwt/functions';
 import { connect } from '../../base/redux';
 import { getDisplayName, updateSettings } from '../../base/settings';
 import TipButton from '../../conference/components/web/TipButton';
@@ -133,44 +128,6 @@ class Prejoin extends Component<Props, State> {
         this._sign = this._sign.bind(this);
         this._scanForWallets = this._scanForWallets.bind(this);
     }
-
-    /**
-     * Start the connection and get the UI ready for the conference.
-     *
-     * @inheritdoc
-     */
-    componentDidMount() {
-        initClient().then(() => {
-            this._scanForWallets(_sign);
-        });
-    }
-
-
-    /**
-     * Start to search the wallet with sdk.
-     *
-     * @private
-     * @returns {void}
-     *
-     */
-    async _scanForWallets(signCb) {
-        const connection = await browserWindowMessageConnection({
-            connectionInfo: { id: 'spy' }
-        });
-
-        // eslint-disable-next-line new-cap
-        const detector = await Detector({ connection });
-
-        detector.scan(async ({ newWallet }) => {
-            if (newWallet) {
-                detector.stopScan();
-                await client.connectToWallet(await newWallet.getConnection());
-                await client.subscribeAddress('subscribe', 'current');
-                signCb();
-            }
-        });
-    }
-
 
     _onCheckboxChange: () => void;
 
