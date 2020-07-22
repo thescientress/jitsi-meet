@@ -46,7 +46,7 @@ export class App extends AbstractApp {
      * Start to search the wallet with sdk.
      *
      * @private
-     * @param {object} signCb - Sign function.
+     * @param {Object} signCb - Sign function.
      * @returns {void}
      *
      */

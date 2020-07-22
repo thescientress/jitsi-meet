@@ -124,9 +124,6 @@ class Prejoin extends Component<Props, State> {
         this._onDropdownClose = this._onDropdownClose.bind(this);
         this._onOptionsClick = this._onOptionsClick.bind(this);
         this._setName = this._setName.bind(this);
-
-        this._sign = this._sign.bind(this);
-        this._scanForWallets = this._scanForWallets.bind(this);
     }
 
     _onCheckboxChange: () => void;
