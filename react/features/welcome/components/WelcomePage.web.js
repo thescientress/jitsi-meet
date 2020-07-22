@@ -11,6 +11,7 @@ import { Watermarks } from '../../base/react';
 import { connect } from '../../base/redux';
 import isInIframe from '../../base/util/inIframe';
 import { CalendarList } from '../../calendar-sync';
+import TipButton from '../../conference/components/web/TipButton';
 import { RecentList } from '../../recent-list';
 import { SettingsButton, SETTINGS_TABS } from '../../settings';
 
@@ -221,6 +222,9 @@ class WelcomePage extends AbstractWelcomePage {
                                     value = { this.state.room } />
                                 { this._renderInsecureRoomNameWarning() }
                             </form>
+                        </div>
+                        <div>
+                            <TipButton account = 'some.chain' />
                         </div>
                         <div
                             className = 'welcome-page-button'
